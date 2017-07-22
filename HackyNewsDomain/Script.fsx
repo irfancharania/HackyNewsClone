@@ -39,6 +39,45 @@ let getRssFeed =
 
 
 let (filterFeedItem:TryFetchFullContent) = fun blacklist item ->
+    let isUnfetchable = blacklist |> List.exists (fun x -> x.IsMatch(item.link.AbsoluteUri))
+
+    match isUnfetchable with 
+    | true -> FetchedItem.Unfetched item
+    //| false -> 
     
 
-    FetchedItem.Unfetched item
+//let fetchFeedItem:FetchFeedItem = fun item ->
+    
+type mercuryResponse = JsonProvider<"""
+{
+  "title": "An Ode to the Rosetta Spacecraft as It Flings Itself Into a Comet",
+  "content": "<div><article class=\"content body-copy\"> <p>Today, the European Space Agency’s... ",
+  "date_published": "2016-09-30T07:00:12.000Z",
+  "lead_image_url": "https://www.wired.com/wp-content/uploads/2016/09/Rosetta_impact-1-1200x630.jpg",
+  "dek": "Time to break out the tissues, space fans.",
+  "url": "https://www.wired.com/2016/09/ode-rosetta-spacecraft-going-die-comet/",
+  "domain": "www.wired.com",
+  "excerpt": "Time to break out the tissues, space fans.",
+  "word_count": 1031,
+  "direction": "ltr",
+  "total_pages": 1,
+  "rendered_pages": 1,
+  "next_page_url": null
+}
+""">
+
+
+
+let getMercuryResponse (item:FeedItem) =
+    let response = Http.RequestString("https://mercury.postlight.com/parser"
+                        , [("url",item.link.AbsoluteUri)]
+                        , seq {yield ("x-api-key", "------")})
+    let data = mercuryResponse.Parse(response)
+
+    if data.WordCount > 0 then
+        Result.Ok {item= item; content = data.Content}
+    else
+        Result.Error {item = item; errorMessage = "failed to parse content"}
+        
+
+    

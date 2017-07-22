@@ -29,9 +29,11 @@ type FailedFetchItem = {
     item: FeedItem
 }
 
+type FetchedItemResult = Result<FullContentItem, FailedFetchItem>
+
 type FetchedItem = 
-| Unfetched of FeedItem // result if url matches unparsable sites
-| Fetched of FullContentItem 
-| Failed of FailedFetchItem
+| Unfetched of FeedItem 
+| Fetched of FetchedItemResult
 
 type TryFetchFullContent = UnparsableSites -> FeedItem -> FetchedItem
+type FetchFeedItem = FeedItem -> FetchedItemResult
