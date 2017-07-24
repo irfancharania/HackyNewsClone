@@ -10,14 +10,20 @@ open HackyNewsDomain
 open FSharp.Data
 open System;
 open System.Text.RegularExpressions;
+#r "../packages/FSharp.Configuration.1.3.0/lib/net45/FSharp.Configuration.dll"
+#r "System.Configuration.dll"
+open FSharp.Configuration
 
-type Rss = XmlProvider<"https://news.ycombinator.com/rss">
+type Settings = YamlConfig<"config.yml">
+let settings = Settings()
+
+type Rss = XmlProvider<"sample/rss.xml">
 
 
 let blacklist: UnparsableSites = [ new Regex(".*twilio.*")]
 
-let getRssFeed = 
-    let test = Rss.GetSample()
+let getRssFeed:GetRssFeed = fun url ->
+    let test = Rss.Parse(url)
     //for item in test.Channel.Items do
     //  printfn " - %s (%s)" item.Title item.Link
 
@@ -38,40 +44,26 @@ let getRssFeed =
     feed
 
 
-let (filterFeedItem:TryFetchFullContent) = fun blacklist item ->
-    let isUnfetchable = blacklist |> List.exists (fun x -> x.IsMatch(item.link.AbsoluteUri))
+//let (filterFeedItem:TryFetchFullContent) = fun blacklist item ->
+//    let isUnfetchable = blacklist |> List.exists (fun x -> x.IsMatch(item.link.AbsoluteUri))
 
-    match isUnfetchable with 
-    | true -> FetchedItem.Unfetched item
-    //| false -> 
+//    match isUnfetchable with 
+//    | true -> FetchedItem.Unfetched item
+//    //| false -> 
     
 
 //let fetchFeedItem:FetchFeedItem = fun item ->
-    
-type mercuryResponse = JsonProvider<"""
-{
-  "title": "An Ode to the Rosetta Spacecraft as It Flings Itself Into a Comet",
-  "content": "<div><article class=\"content body-copy\"> <p>Today, the European Space Agency’s... ",
-  "date_published": "2016-09-30T07:00:12.000Z",
-  "lead_image_url": "https://www.wired.com/wp-content/uploads/2016/09/Rosetta_impact-1-1200x630.jpg",
-  "dek": "Time to break out the tissues, space fans.",
-  "url": "https://www.wired.com/2016/09/ode-rosetta-spacecraft-going-die-comet/",
-  "domain": "www.wired.com",
-  "excerpt": "Time to break out the tissues, space fans.",
-  "word_count": 1031,
-  "direction": "ltr",
-  "total_pages": 1,
-  "rendered_pages": 1,
-  "next_page_url": null
-}
-""">
+
+
+
+type mercuryResponse = JsonProvider<"sample/mercury.json">
 
 
 
 let getMercuryResponse (item:FeedItem) =
-    let response = Http.RequestString("https://mercury.postlight.com/parser"
+    let response = Http.RequestString(settings.Mercury.ApiUrl.AbsoluteUri
                         , [("url",item.link.AbsoluteUri)]
-                        , seq {yield ("x-api-key", "------")})
+                        , seq {yield ("x-api-key", settings.Mercury.ApiKey)})
     let data = mercuryResponse.Parse(response)
 
     if data.WordCount > 0 then
@@ -80,4 +72,3 @@ let getMercuryResponse (item:FeedItem) =
         Result.Error {item = item; errorMessage = "failed to parse content"}
         
 
-    

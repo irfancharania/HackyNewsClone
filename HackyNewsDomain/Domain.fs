@@ -3,6 +3,7 @@
 open System
 open System.Text.RegularExpressions
 
+
 type FeedItem = {
     title: string
     description: string
@@ -24,6 +25,8 @@ type RssFeed = {
 }
 
 type UnparsableSites = Regex list
+
+//------------------------
 type FailedFetchItem = {
     errorMessage: string
     item: FeedItem
@@ -35,5 +38,10 @@ type FetchedItem =
 | Unfetched of FeedItem 
 | Fetched of FetchedItemResult
 
-type TryFetchFullContent = UnparsableSites -> FeedItem -> FetchedItem
-type FetchFeedItem = FeedItem -> FetchedItemResult
+
+type GetRssFeed = string -> RssFeed
+type CanFetchContent = FeedItem -> bool
+type TryFetchContent = UnparsableSites -> RssFeed -> FetchedItem list
+
+
+type GetRssFeedWorkFlow = GetRssFeed -> FetchedItem list

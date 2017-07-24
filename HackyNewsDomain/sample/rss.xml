@@ -1,0 +1,34 @@
+<rss version="2.0">
+    <channel>
+        <title>Hacker News</title>
+        <link>https://news.ycombinator.com/</link>
+        <description>Links for the intellectually curious, ranked by readers.</description>
+        <item>
+            <title>Pev: Postgres ‘Explain’ Visualizer</title>
+            <link>http://tatiyants.com/postgres-query-plan-visualization/</link>
+            <pubDate>Sun, 23 Jul 2017 22:06:41 +0000</pubDate>
+            <comments>https://news.ycombinator.com/item?id=14834672</comments>
+            <description>
+                <![CDATA[<a href="https://news.ycombinator.com/item?id=14834672">Comments</a>]]>
+            </description>
+        </item>
+        <item>
+            <title>Fiction: Who Killed Windows Phone?</title>
+            <link>https://mondaynote.com/fiction-who-killed-windows-phone-af7491d4a363</link>
+            <pubDate>Mon, 24 Jul 2017 01:43:29 +0000</pubDate>
+            <comments>https://news.ycombinator.com/item?id=14835372</comments>
+            <description>
+                <![CDATA[<a href="https://news.ycombinator.com/item?id=14835372">Comments</a>]]>
+            </description>
+        </item>
+        <item>
+            <title>Status update from the Reproducible Builds project</title>
+            <link>https://lists.debian.org/debian-devel-announce/2017/07/msg00004.html</link>
+            <pubDate>Sun, 23 Jul 2017 21:05:17 +0000</pubDate>
+            <comments>https://news.ycombinator.com/item?id=14834386</comments>
+            <description>
+                <![CDATA[<a href="https://news.ycombinator.com/item?id=14834386">Comments</a>]]>
+            </description>
+        </item>
+    </channel>
+</rss>

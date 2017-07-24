@@ -1,0 +1,6 @@
+﻿Feed:
+  Url: https://news.ycombinator.com/rss
+
+Mercury:
+  ApiUrl: https://mercury.postlight.com/parser
+  ApiKey: AAAAAAAAAAAAA
