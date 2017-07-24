@@ -23,7 +23,7 @@ type Rss = XmlProvider<"sample/rss.xml">
 let blacklist: UnparsableSites = [ new Regex(".*twilio.*")]
 
 let getRssFeed:GetRssFeed = fun url ->
-    let test = Rss.Parse(url)
+    let test = Rss.Parse(url.AbsoluteUri)
     //for item in test.Channel.Items do
     //  printfn " - %s (%s)" item.Title item.Link
 
@@ -31,7 +31,7 @@ let getRssFeed:GetRssFeed = fun url ->
         title = test.Channel.Title;
         description = test.Channel.Description;
         link = new Uri(test.Channel.Link);
-        item = test.Channel.Items 
+        items = test.Channel.Items 
                 |> Array.map (fun x -> { title= x.Title;
                                         description= x.Description;
                                         link = new Uri(x.Link);

@@ -21,7 +21,7 @@ type RssFeed = {
     title: string
     description: string
     link: Uri
-    item: FeedItem list
+    items: FeedItem list
 }
 
 type UnparsableSites = Regex list
@@ -39,9 +39,18 @@ type FetchedItem =
 | Fetched of FetchedItemResult
 
 
-type GetRssFeed = string -> RssFeed
-type CanFetchContent = FeedItem -> bool
-type TryFetchContent = UnparsableSites -> RssFeed -> FetchedItem list
+type GetRssFeed = Uri -> RssFeed
 
+type CanFetchContent = 
+    UnparsableSites     // dependency
+        -> FeedItem     // input
+        -> bool         // output
 
-type GetRssFeedWorkFlow = GetRssFeed -> FetchedItem list
+type TryFetchItem = FeedItem -> FetchedItemResult
+
+type TryFetchItems = 
+    UnparsableSites             // dependency
+        -> RssFeed              // input
+        -> FetchedItem list     // output
+
+type GetRssFeedWorkFlow =  Uri -> FetchedItem list

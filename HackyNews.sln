@@ -1,11 +1,16 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26430.15
+VisualStudioVersion = 15.0.26430.16
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HackyNews", "HackyNews\HackyNews.csproj", "{F5B58968-7A6B-4E77-8C6F-1F1811FF7B44}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HackyNews", "HackyNews\HackyNews.csproj", "{F5B58968-7A6B-4E77-8C6F-1F1811FF7B44}"
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "HackyNewsDomain", "HackyNewsDomain\HackyNewsDomain.fsproj", "{71A50359-57DD-48E5-A545-96F8C3A4B337}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{27EA4D49-4030-451F-BA84-F8228482C1B8}"
+	ProjectSection(SolutionItems) = preProject
+		todo.md = todo.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
