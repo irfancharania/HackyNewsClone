@@ -7,12 +7,6 @@ open FSharp.Configuration
 open HackyNewsDomain
 
 
-// Unparsable blacklist
-// ----------------------
-let blacklist: UnparsableSites = [ 
-    new Regex(".*phone.*")
-]
-
 
 // Set up Type Providers
 // ----------------------
@@ -21,6 +15,14 @@ let settings = Settings()
 
 type Rss = XmlProvider<"sample/rss.xml">
 type MercuryResponse = JsonProvider<"sample/mercury.json">
+
+
+
+// Unparsable blacklist
+// ----------------------
+let blacklist (settings:Settings) :UnparsableSites = 
+    settings.Blacklist
+    |> Seq.map (fun x -> new Regex(x))
 
 
 // Main functions
@@ -43,12 +45,7 @@ let getRssFeed:GetRssFeed = fun url ->
     }
 
     feed
-
-let canFetchContent:CanFetchContent = fun blacklist item ->
-    blacklist 
-    |> List.exists (fun x -> x.IsMatch(item.link.AbsoluteUri))
-    |> not
-    
+   
 let tryFetchContent:TryFetchItem = fun item ->
     try
         let args = List.singleton ("url", item.link.AbsoluteUri);
@@ -66,21 +63,27 @@ let tryFetchContent:TryFetchItem = fun item ->
     with
         | ex -> Error {item = item; errorMessage = ex.Message}
 
+
+let maybeFetchItem:MaybeFetchItem = fun blacklist item -> 
+    let canFetchContent = 
+        blacklist 
+        |> Seq.exists (fun x -> x.IsMatch(item.link.AbsoluteUri))
+        |> not
+
+    if canFetchContent then
+        Fetched (tryFetchContent item)
+    else
+        Unfetched item
+
+
 let tryFetchItems:TryFetchItems = fun blacklist feed -> 
     feed.items
-    |> List.map (fun x -> 
-        if canFetchContent blacklist x then
-            Fetched (tryFetchContent x)
-        else
-            Unfetched x)
-
-let tryFetchItems' feed = 
-    tryFetchItems blacklist feed
+    |> List.map (maybeFetchItem blacklist)
 
 
 // Run it!
-let data =
+let getData (settings:Settings) =
     settings.Feed.Url 
     |> getRssFeed
-    |> tryFetchItems'
+    |> tryFetchItems (blacklist settings)
 

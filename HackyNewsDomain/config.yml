@@ -4,3 +4,7 @@
 Mercury:
   ApiUrl: https://mercury.postlight.com/parser
   ApiKey: AAAAAAAAAAAAA
+
+Blacklist:
+  - .*phone.*
+  - .*twilio.*
