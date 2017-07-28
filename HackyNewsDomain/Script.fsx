@@ -20,7 +20,7 @@ let settings = Settings()
 type Rss = XmlProvider<"sample/rss.xml">
 
 
-let blacklist: UnparsableSites = [ new Regex(".*twilio.*")]
+//let blacklist: UnparsableSites = [ new Regex(".*twilio.*")]
 
 let getRssFeed:GetRssFeed = fun url ->
     let test = Rss.Parse(url.AbsoluteUri)

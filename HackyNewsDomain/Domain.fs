@@ -50,4 +50,4 @@ type MaybeFetchItem = UnparsableSites     // dependency
 type TryFetchItems = 
     UnparsableSites             // dependency
         -> RssFeed              // input
-        -> FetchedItem list     // output
+        -> FetchedItem seq     // output

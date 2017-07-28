@@ -13,6 +13,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="1.1.3" />
     <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="1.1.2" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="1.1.2" />
+    <PackageReference Include="Microsoft.NETCore.Portable.Compatibility" Version="1.0.1" />
     <PackageReference Include="Microsoft.VisualStudio.Web.BrowserLink" Version="1.1.2" />
   </ItemGroup>
   <ItemGroup>
@@ -20,6 +21,11 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\HackyNewsDomain\HackyNewsDomain.fsproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="FSharp.Configuration">
+      <HintPath>..\packages\FSharp.Configuration.1.3.0\lib\net45\FSharp.Configuration.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>

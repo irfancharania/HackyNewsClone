@@ -79,6 +79,7 @@ let maybeFetchItem:MaybeFetchItem = fun blacklist item ->
 let tryFetchItems:TryFetchItems = fun blacklist feed -> 
     feed.items
     |> List.map (maybeFetchItem blacklist)
+    |> List.toSeq
 
 
 // Run it!
