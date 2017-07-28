@@ -1,0 +1,11 @@
+﻿@model HackyNewsDomain.Models.Feed
+<h2>Welcome to ASP.NET MVC !</h2>
+
+
+@foreach (var result in @Model.GetItems()) {
+    <h4>@result.GetItem().title</h4>
+	if (result.HasContent()) {
+       <div class="content">@result.GetContent()</div>
+	}
+}
+
