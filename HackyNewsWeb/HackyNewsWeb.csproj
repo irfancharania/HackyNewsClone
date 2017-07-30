@@ -9,7 +9,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>HackyNewsWeb</RootNamespace>
     <AssemblyName>HackyNewsWeb</AssemblyName>
-    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
     <UpgradeBackupLocation>

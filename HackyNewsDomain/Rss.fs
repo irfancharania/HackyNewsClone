@@ -82,7 +82,7 @@ let tryFetchItems:TryFetchItems = fun blacklist feed ->
     
 
 
-let fetchServiceAvailable = fun feed ->
+let fetchServiceAvailable:FetchServiceAvailable = fun feed ->
     try
         let item = feed.items |> Seq.head
         let args = List.singleton ("url", item.link.AbsoluteUri);

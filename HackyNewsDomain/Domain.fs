@@ -39,9 +39,6 @@ type FetchedItem =
     | Unfetched of FeedItem 
     | Fetched of FetchedItemResult
 
-
-type GetRssFeed = Uri -> RssFeed
-
 type TryFetchItem = FeedItem -> FetchedItemResult
 
 type MaybeFetchItem = UnparsableSites     // dependency
@@ -57,3 +54,7 @@ type TryFetchItems =
     UnparsableSites                                     // dependency
         -> Result<RssFeed, FetchServiceUnavailable>     // input
         -> FetchedItem seq                              // output
+
+type FetchServiceAvailable = RssFeed -> Result<RssFeed, FetchServiceUnavailable>
+
+type GetRssFeed = Uri -> RssFeed
