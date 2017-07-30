@@ -21,7 +21,7 @@ type RssFeed = {
     title: string
     description: string
     link: Uri
-    items: FeedItem list
+    items: FeedItem seq
 }
 
 type UnparsableSites = seq<Regex>
@@ -35,8 +35,8 @@ type FailedFetchItem = {
 type FetchedItemResult = Result<FullContentItem, FailedFetchItem>
 
 type FetchedItem = 
-| Unfetched of FeedItem 
-| Fetched of FetchedItemResult
+    | Unfetched of FeedItem 
+    | Fetched of FetchedItemResult
 
 
 type GetRssFeed = Uri -> RssFeed
@@ -51,3 +51,5 @@ type TryFetchItems =
     UnparsableSites             // dependency
         -> RssFeed              // input
         -> FetchedItem seq     // output
+
+
