@@ -3,7 +3,7 @@
 
 Mercury:
   ApiUrl: https://mercury.postlight.com/parser
-  ApiKey: BBBBBBB
+  ApiKey: AAAAAAAAAAAAA
 
 Blacklist:
   - .*phone.*

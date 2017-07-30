@@ -3,12 +3,12 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26430.16
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{f2a71f9b-5d33-465a-a702-920d77279786}") = "HackyNewsDomain", "HackyNewsDomain\HackyNewsDomain.fsproj", "{71A50359-57DD-48E5-A545-96F8C3A4B337}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{27EA4D49-4030-451F-BA84-F8228482C1B8}"
 	ProjectSection(SolutionItems) = preProject
 		todo.md = todo.md
 	EndProjectSection
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "HackyNewsDomain", "HackyNewsDomain\HackyNewsDomain.fsproj", "{71A50359-57DD-48E5-A545-96F8C3A4B337}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HackyNewsWeb", "HackyNewsWeb\HackyNewsWeb.csproj", "{6983BFC6-4AB2-4AA8-88CB-FCB4824ECAF9}"
 EndProject

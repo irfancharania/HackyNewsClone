@@ -65,25 +65,40 @@ let tryFetchContent:TryFetchItem = fun item ->
 
 
 let maybeFetchItem:MaybeFetchItem = fun blacklist item -> 
-    let canFetchContent = 
+    let isBlackListed = 
         blacklist 
         |> Seq.exists (fun x -> x.IsMatch(item.link.AbsoluteUri))
-        |> not
 
-    if canFetchContent then
-        Fetched (tryFetchContent item)
-    else
+    if isBlackListed then
         Unfetched item
+    else
+        Fetched (tryFetchContent item)
 
 
 let tryFetchItems:TryFetchItems = fun blacklist feed -> 
-    feed.items
-    |> Seq.map (maybeFetchItem blacklist)
+    match feed with
+    | Ok x -> x.items |> Seq.map (maybeFetchItem blacklist)
+    | Error x -> x.feed.items |> Seq.map Unfetched
+    
+
+
+let fetchServiceAvailable = fun feed ->
+    try
+        let item = feed.items |> Seq.head
+        let args = List.singleton ("url", item.link.AbsoluteUri);
+        let headers = Seq.singleton ("x-api-key", settings.Mercury.ApiKey)
+
+        let responseBody = Http.Request(settings.Mercury.ApiUrl.AbsoluteUri
+                                                , args, headers)
+        Ok (feed)
+    with
+        | ex -> Error ({feed = feed; errorMessage = ex.Message})
 
 
 // Run it!
 let getData (settings:Settings) =
     settings.Feed.Url 
     |> getRssFeed
+    |> fetchServiceAvailable
     |> tryFetchItems (blacklist settings)
 

@@ -1,5 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -7,7 +7,8 @@
     <OutputType>Library</OutputType>
     <RootNamespace>HackyNewsWeb.Tests</RootNamespace>
     <AssemblyName>HackyNewsWeb.Tests</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -66,13 +67,17 @@
     <Compile Include="Controllers\HomeControllerTest.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\HackyNewsWeb\HackyNewsWeb.csproj">
-      <Project>{6983BFC6-4AB2-4AA8-88CB-FCB4824ECAF9}</Project>
-      <Name>HackyNewsWeb</Name>
-    </ProjectReference>
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <ProjectReference Include="..\HackyNewsDomain\HackyNewsDomain.fsproj">
+      <Project>{71a50359-57dd-48e5-a545-96f8c3a4b337}</Project>
+      <Name>HackyNewsDomain</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\HackyNewsWeb\HackyNewsWeb.csproj">
+      <Project>{6983bfc6-4ab2-4aa8-88cb-fcb4824ecaf9}</Project>
+      <Name>HackyNewsWeb</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

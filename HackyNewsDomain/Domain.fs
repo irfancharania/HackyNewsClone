@@ -2,6 +2,7 @@
 
 open System
 open System.Text.RegularExpressions
+open FSharp.Data
 
 
 type FeedItem = {
@@ -47,9 +48,12 @@ type MaybeFetchItem = UnparsableSites     // dependency
                         -> FeedItem       // input
                         -> FetchedItem    // output
 
+type FetchServiceUnavailable = {
+    errorMessage: string
+    feed: RssFeed
+}
+
 type TryFetchItems = 
-    UnparsableSites             // dependency
-        -> RssFeed              // input
-        -> FetchedItem seq     // output
-
-
+    UnparsableSites                                     // dependency
+        -> Result<RssFeed, FetchServiceUnavailable>     // input
+        -> FetchedItem seq                              // output
