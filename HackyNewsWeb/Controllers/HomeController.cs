@@ -15,6 +15,23 @@ namespace HackyNewsWeb.Controllers
             var settings = new Data.Settings();
             var feed = new Models.Feed(settings);
 
+            var maybeItems = feed.GetItems();
+            if(maybeItems.Success()) {
+                foreach(var result in maybeItems.GetResult()) {
+                    if(result.Success()){
+                        var item = result.GetResult().item;
+                        Console.WriteLine(item.title);
+                    } else {
+                        var item = result.GetError().Item1;
+                        var message = result.GetError().Item2;
+
+						Console.WriteLine(item.title);
+						Console.WriteLine(message);
+                    }
+                }
+            }
+
+
             return View(feed);
         }
     }
