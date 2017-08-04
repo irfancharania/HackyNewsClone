@@ -1,9 +1,19 @@
-﻿namespace HackyNewsDomain
+﻿/// The application accepts an RSS feed and fetches
+/// full content text for each item (unless item is blacklisted)
+/// The content is cleansed using the Mercury Postlight web parser
+namespace rec HackyNewsDomain.Domain
 
 open System
 open System.Text.RegularExpressions
 open FSharp.Data
 
+
+//------------------------
+// Blacklist sites that match expression
+type UnparsableSites = seq<Regex>
+
+//------------------------
+// Domain input
 
 type FeedItem = {
     title: string
@@ -13,11 +23,6 @@ type FeedItem = {
     comments: Uri
 }
 
-type FullContentItem = {
-    content: string
-    item: FeedItem
-}
-
 type RssFeed = {
     title: string
     description: string
@@ -25,36 +30,40 @@ type RssFeed = {
     items: FeedItem seq
 }
 
-type UnparsableSites = seq<Regex>
-
 //------------------------
-type FailedFetchItem = {
-    errorMessage: string
+// Domain output
+
+type FeedItemWithContent = {
+    content: string
     item: FeedItem
 }
 
-type FetchedItemResult = Result<FullContentItem, FailedFetchItem>
+//------------------------
 
-type FetchedItem = 
-    | Unfetched of FeedItem 
-    | Fetched of FetchedItemResult
+type IsFetchServiceAvailable = RssFeed -> Result<RssFeed, ServiceError>
 
-type TryFetchItem = FeedItem -> FetchedItemResult
+type FetchRssFeedItems = UnparsableSites                                    // dependency
+                            -> Uri                                          // input
+                            -> Result<seq<FetchedItemResult>, ServiceError> // output
 
-type MaybeFetchItem = UnparsableSites     // dependency
-                        -> FeedItem       // input
-                        -> FetchedItem    // output
+type GetRssFeed = Uri                                   // input
+                    -> Result<RssFeed, ServiceError>    // output
 
-type FetchServiceUnavailable = {
-    errorMessage: string
-    feed: RssFeed
-}
 
-type TryFetchItems = 
-    UnparsableSites                                     // dependency
-        -> Result<RssFeed, FetchServiceUnavailable>     // input
-        -> FetchedItem seq                              // output
+type FetchedItemResult = Result<FeedItemWithContent, FetchItemError>
 
-type FetchServiceAvailable = RssFeed -> Result<RssFeed, FetchServiceUnavailable>
+type TryFetchItems = UnparsableSites                // dependency
+                        -> RssFeed                  // input
+                        -> seq<FetchedItemResult>   // output
 
-type GetRssFeed = Uri -> RssFeed
+type TryFetchItemContent = UnparsableSites                  // dependency
+                            -> FeedItem                     // input
+                            -> FetchedItemResult            // output
+
+//------------------------
+// Expected errors
+
+type ServiceError = ServiceError of string
+type FetchItemError = FeedItem * string
+
+

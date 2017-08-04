@@ -1,5 +1,5 @@
 ﻿module HackyNewsDomain.Models
-open HackyNewsDomain
+open HackyNewsDomain.Domain
 
 type Item(item:FetchedItem) =  
     member this.GetItem():FeedItem =
