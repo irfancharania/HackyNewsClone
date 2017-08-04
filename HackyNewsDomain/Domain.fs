@@ -56,14 +56,14 @@ type TryFetchItems = UnparsableSites                // dependency
                         -> RssFeed                  // input
                         -> seq<FetchedItemResult>   // output
 
-type TryFetchItemContent = UnparsableSites                  // dependency
-                            -> FeedItem                     // input
-                            -> FetchedItemResult            // output
+type TryFetchItemContent = UnparsableSites          // dependency
+                            -> FeedItem             // input
+                            -> FetchedItemResult    // output
 
 //------------------------
 // Expected errors
 
 type ServiceError = ServiceError of string
-type FetchItemError = FeedItem * string
+type FetchItemError = {item:FeedItem; message:string}
 
 

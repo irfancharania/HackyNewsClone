@@ -63,9 +63,9 @@ let tryFetchItemContent' = fun (item:FeedItem) ->
 
         if data.WordCount > 0
             then Ok {item = item; content = data.Content}
-            else Error (item, "failed to parse content")
+            else Error ({item=item; message="failed to parse content"})
     with
-        | ex -> Error (item, ex.Message)
+        | ex -> Error ({item=item; message=ex.Message})
 
 
 let tryFetchItemContent:TryFetchItemContent = fun blacklist item ->
@@ -74,9 +74,10 @@ let tryFetchItemContent:TryFetchItemContent = fun blacklist item ->
         |> Seq.exists (fun x -> x.IsMatch(item.link.AbsoluteUri))
 
     if isBlackListed item then
-        Error (item, "Site is blacklisted")
+        Error ({item=item; message="Site is blacklisted"})
     else
         tryFetchItemContent' item
+
 
 let tryFetchItems:TryFetchItems = fun blacklist feed -> 
     feed.items
@@ -94,6 +95,7 @@ let isFetchServiceAvailable:IsFetchServiceAvailable = fun feed ->
         Ok feed
     with
     | ex -> Error (ServiceError (ex.Message))
+
 
 // Run it!
 let getData (settings:Settings) =
