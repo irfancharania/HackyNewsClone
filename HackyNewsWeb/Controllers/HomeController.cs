@@ -8,31 +8,20 @@ using HackyNewsDomain;
 
 namespace HackyNewsWeb.Controllers
 {
-    public class HomeController : Controller
-    {
-        public ActionResult Index()
-        {
-            var settings = new Data.Settings();
-            var feed = new Models.Feed(settings);
+	public class HomeController : Controller
+	{
+		private const string CONFIG_PATH = "config.yml";
 
-            var maybeItems = feed.GetItems();
-            if(maybeItems.Success()) {
-                foreach(var result in maybeItems.GetResult()) {
-                    if(result.Success()){
-                        var item = result.GetResult().item;
-                        Console.WriteLine(item.title);
-                    } else {
-                        var item = result.GetError().Item1;
-                        var message = result.GetError().Item2;
+		public ActionResult Index()
+		{
+			var configPath = Server.MapPath(CONFIG_PATH);
 
-						Console.WriteLine(item.title);
-						Console.WriteLine(message);
-                    }
-                }
-            }
+			var settings = new Data.Settings();
+			settings.Load(configPath);
+			var feed = new Models.Feed(settings);
 
-
-            return View(feed);
-        }
-    }
+			var maybeItems = feed.GetItems();
+			return View(feed);
+		}
+	}
 }
