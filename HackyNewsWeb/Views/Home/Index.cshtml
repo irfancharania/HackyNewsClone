@@ -2,10 +2,16 @@
 <h2>Welcome to ASP.NET MVC !</h2>
 
 
-@foreach (var result in @Model.GetItems()) {
-	<h4>@result.GetItem().title</h4>
-	if (result.HasContent()) {
-	   <div class="content">@result.GetContent()</div>
-	}
+@{var maybeItems = @Model.GetItems()}
+@if(maybeItems.Success()) {
+    foreach (var result in maybeItems) {
+		if (result.Success()) {
+           <div class="meta">Fetched</div>
+           <h4>@result.GetResult().item.title</h4>
+		   <div class="content">@result.GetResult().content</div>
+		} else {
+            <div class="meta">@result.GetError().errorMessage</div>
+            <h4>@result.GetError().item.title</h4>
+        }
+    }
 }
-

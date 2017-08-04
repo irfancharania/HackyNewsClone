@@ -1,28 +1,26 @@
 ﻿module HackyNewsDomain.Models
 open HackyNewsDomain.Domain
 
-type Item(item:FetchedItem) =  
-    member this.GetItem():FeedItem =
-        match item with
-        | Unfetched(item) -> item
-        | Fetched(result) -> match result with
-                             | Ok(r) -> r.item 
-                             | Error(r) -> r.item
-    member this.HasContent():bool =
-        match item with
-        | Unfetched(item) -> false
-        | Fetched(result) -> match result with
-                             | Ok(r) -> true
-                             | Error(r) -> false
-    member this.GetContent():string =
-        match item with
-        | Unfetched(item) -> ""
-        | Fetched(result) -> match result with
-                             | Ok(r) -> r.content
-                             | Error(r) -> "" 
+
+type ResultOrError<'TResult, 'TErr> (result:Result<'TResult, 'TErr>) =
+    member this.Success():bool =
+        match result with
+        | Ok(x) -> true
+        | Error(x) -> false
+
+    member this.GetResult():'TResult =
+        match result with
+        | Ok(x) -> x
+        | Error(x) -> failwith "Called GetResult on error result, dumbass"
+
+    member this.GetError():'TErr = 
+        match result with
+        | Ok(x) -> failwith "Called GetError on success result"
+        | Error(x) -> x
 
 
 type Feed(settings:Data.Settings) =
-    member this.GetItems():Item seq =
+    member this.GetItems() =
         Data.getData settings
-        |> Seq.map (fun x -> new Item(x))
+        |> Result.map (Seq.map (fun x -> ResultOrError x))
+        |> ResultOrError
