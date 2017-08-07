@@ -59,11 +59,17 @@ type FetchRssFeedItems = UnparsableSites                                        
 type GetRssFeed = Uri                                       // input
                     -> Result<RssFeed, ServiceErrors>       // output
 
+type IsFetchServiceAvailable<'a> = FetchServiceInfo                         // input
+                                    -> 'a                                   // passthrough
+                                    -> Result<'a, ServiceErrors>            // output
+
 type TryFetchItems = UnparsableSites                // dependency
+                        -> FetchServiceInfo         // dependency
                         -> RssFeed                  // input
                         -> seq<FetchedItemResult>   // output
 
 type TryFetchItemContent = UnparsableSites          // dependency
+                            -> FetchServiceInfo     // dependency                        
                             -> FeedItem             // input
                             -> FetchedItemResult    // output
 
@@ -77,3 +83,4 @@ type FetchItemError = {item:FeedItem; message:string}
 type ServiceErrors = 
 | FailedToGetRssCase of string
 | FetchServiceNotAvailableCase of string
+
