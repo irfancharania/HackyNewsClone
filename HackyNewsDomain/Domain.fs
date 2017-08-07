@@ -12,6 +12,13 @@ open FSharp.Data
 // Blacklist sites that match expression
 type UnparsableSites = seq<Regex>
 
+// Service to fetch sanitized text
+type FetchServiceInfo = {
+    apiUrl: Uri
+    apiKey: string
+    testUrl: Uri
+}
+
 //------------------------
 // Domain input
 
@@ -42,6 +49,7 @@ type FeedItemWithContent = {
 // Public workflow
 
 type FetchRssFeedItems = UnparsableSites                                        // dependency
+                            -> FetchServiceInfo                                 // dependency
                             -> Uri                                              // input
                             -> Result<seq<FetchedItemResult>, ServiceErrors>    // output
 

@@ -37,8 +37,8 @@ let getRssFeed:GetRssFeed = fun url ->
             description = rss.Channel.Description;
             link = new Uri(rss.Channel.Link);
             items = rss.Channel.Items 
-                    |> Array.map (fun x -> { title= x.Title;
-                                            description= x.Description;
+                    |> Array.map (fun x -> { title = x.Title;
+                                            description = x.Description;
                                             link = new Uri(x.Link);
                                             pubDate = x.PubDate;
                                             comments = new Uri(x.Comments)})
@@ -64,9 +64,9 @@ let tryFetchItemContent' = fun (item:FeedItem) ->
 
         if data.WordCount > 0
             then Ok {item = item; content = data.Content}
-            else Error ({item=item; message="failed to parse content"})
+            else Error ({item = item; message = "failed to parse content"})
     with
-        | ex -> Error ({item=item; message=ex.Message})
+        | ex -> Error ({item = item; message = ex.Message})
 
 
 let tryFetchItemContent:TryFetchItemContent = fun blacklist item ->
@@ -75,7 +75,7 @@ let tryFetchItemContent:TryFetchItemContent = fun blacklist item ->
         |> Seq.exists (fun x -> x.IsMatch(item.link.AbsoluteUri))
 
     if isBlackListed item then
-        Error ({item=item; message="Site is blacklisted"})
+        Error ({item = item; message = "Site is blacklisted"})
     else
         tryFetchItemContent' item
 
@@ -85,12 +85,19 @@ let tryFetchItems:TryFetchItems = fun blacklist feed ->
     |> Seq.map (tryFetchItemContent blacklist)
 
 
-let isFetchServiceAvailable = fun (settings:Settings) item ->
-    try
-        let args = List.singleton ("url", settings.Mercury.TestUrl.AbsoluteUri);
-        let headers = Seq.singleton ("x-api-key", settings.Mercury.ApiKey)
+let getFetchServiceInfo (settings:Settings) :FetchServiceInfo =
+    {
+        apiUrl = settings.Mercury.ApiUrl;
+        apiKey = settings.Mercury.ApiKey;
+        testUrl = settings.Mercury.TestUrl
+    }
 
-        let responseBody = Http.Request(settings.Mercury.ApiUrl.AbsoluteUri
+let isFetchServiceAvailable = fun (service:FetchServiceInfo) item ->
+    try
+        let args = List.singleton ("url", service.testUrl.AbsoluteUri);
+        let headers = Seq.singleton ("x-api-key", service.apiKey)
+
+        let responseBody = Http.Request(service.apiUrl.AbsoluteUri
                                                 , args, headers)
         Ok (item)
     with
@@ -100,17 +107,19 @@ let isFetchServiceAvailable = fun (settings:Settings) item ->
 // Run it!
 let getData (settings:Settings) =
     let blacklist = getBlacklist settings
+    let fetchService = getFetchServiceInfo settings
     let url = settings.Feed.Url
+    
 
-    let fetchRssFeed:FetchRssFeedItems = fun blacklist uri ->
+    let fetchRssFeed:FetchRssFeedItems = fun blacklist service uri ->
         let tryFetchItems' = tryFetchItems blacklist
-        let isFetchServiceAvailable' = isFetchServiceAvailable settings
+        let isFetchServiceAvailable' = isFetchServiceAvailable service
 
         uri
         |> getRssFeed 
         |> Result.bind isFetchServiceAvailable'
         |> Result.map tryFetchItems'
     
-    fetchRssFeed blacklist url
+    fetchRssFeed blacklist fetchService url
     |> Result.map (Seq.map fromDomain)
 
