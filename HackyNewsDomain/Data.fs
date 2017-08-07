@@ -5,6 +5,7 @@ open System.Text.RegularExpressions
 open FSharp.Data
 open FSharp.Configuration
 open HackyNewsDomain.Domain
+open HackyNewsDomain.Dto
 
 
 
@@ -47,7 +48,7 @@ let getRssFeed:GetRssFeed = fun url ->
 
         Ok feed
     with
-        | ex -> Error (ServiceError ("Unable to load Rss feed: " + ex.Message))
+        | ex -> Error (FailedToGetRssCase("Unable to load Rss feed: " + ex.Message))
 
         
 let tryFetchItemContent' = fun (item:FeedItem) ->
@@ -84,18 +85,17 @@ let tryFetchItems:TryFetchItems = fun blacklist feed ->
     |> Seq.map (tryFetchItemContent blacklist)
 
 
-let isFetchServiceAvailable:IsFetchServiceAvailable = fun feed ->
+let isFetchServiceAvailable = fun (settings:Settings) item ->
     try
-        let item = feed.items |> Seq.head
-        let args = List.singleton ("url", item.link.AbsoluteUri);
+        let args = List.singleton ("url", settings.Mercury.TestUrl.AbsoluteUri);
         let headers = Seq.singleton ("x-api-key", settings.Mercury.ApiKey)
 
         let responseBody = Http.Request(settings.Mercury.ApiUrl.AbsoluteUri
                                                 , args, headers)
-        Ok feed
+        Ok (item)
     with
-    | ex -> Error (ServiceError (ex.Message))
-
+    | ex -> Error (FetchServiceNotAvailableCase (ex.Message))
+    
 
 // Run it!
 let getData (settings:Settings) =
@@ -103,10 +103,14 @@ let getData (settings:Settings) =
     let url = settings.Feed.Url
 
     let fetchRssFeed:FetchRssFeedItems = fun blacklist uri ->
+        let tryFetchItems' = tryFetchItems blacklist
+        let isFetchServiceAvailable' = isFetchServiceAvailable settings
+
         uri
         |> getRssFeed 
-        |> Result.bind isFetchServiceAvailable
-        |> Result.map (tryFetchItems blacklist)
+        |> Result.bind isFetchServiceAvailable'
+        |> Result.map tryFetchItems'
     
     fetchRssFeed blacklist url
+    |> Result.map (Seq.map fromDomain)
 

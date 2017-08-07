@@ -4,6 +4,7 @@
 Mercury:
   ApiUrl: https://mercury.postlight.com/parser
   ApiKey: BBBBBBB
+  TestUrl: https://trackchanges.postlight.com/building-awesome-cms-f034344d8ed
 
 Blacklist:
   - .*phone.*

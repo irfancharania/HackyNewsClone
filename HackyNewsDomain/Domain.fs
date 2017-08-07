@@ -39,18 +39,17 @@ type FeedItemWithContent = {
 }
 
 //------------------------
+// Public workflow
 
-type IsFetchServiceAvailable = RssFeed -> Result<RssFeed, ServiceError>
-
-type FetchRssFeedItems = UnparsableSites                                    // dependency
-                            -> Uri                                          // input
-                            -> Result<seq<FetchedItemResult>, ServiceError> // output
-
-type GetRssFeed = Uri                                   // input
-                    -> Result<RssFeed, ServiceError>    // output
+type FetchRssFeedItems = UnparsableSites                                        // dependency
+                            -> Uri                                              // input
+                            -> Result<seq<FetchedItemResult>, ServiceErrors>    // output
 
 
-type FetchedItemResult = Result<FeedItemWithContent, FetchItemError>
+//------------------------
+
+type GetRssFeed = Uri                                       // input
+                    -> Result<RssFeed, ServiceErrors>       // output
 
 type TryFetchItems = UnparsableSites                // dependency
                         -> RssFeed                  // input
@@ -60,10 +59,13 @@ type TryFetchItemContent = UnparsableSites          // dependency
                             -> FeedItem             // input
                             -> FetchedItemResult    // output
 
+type FetchedItemResult = Result<FeedItemWithContent, FetchItemError>
+
 //------------------------
 // Expected errors
 
-type ServiceError = ServiceError of string
 type FetchItemError = {item:FeedItem; message:string}
 
-
+type ServiceErrors = 
+| FailedToGetRssCase of string
+| FetchServiceNotAvailableCase of string

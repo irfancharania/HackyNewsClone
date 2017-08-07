@@ -22,5 +22,4 @@ type ResultOrError<'TResult, 'TErr> (result:Result<'TResult, 'TErr>) =
 type Feed(settings:Data.Settings) =
     member this.GetItems() =
         Data.getData settings
-        |> Result.map (Seq.map (fun x -> ResultOrError x))
         |> ResultOrError

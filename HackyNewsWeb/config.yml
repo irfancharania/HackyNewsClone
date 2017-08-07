@@ -3,8 +3,10 @@
 
 Mercury:
   ApiUrl: https://mercury.postlight.com/parser
-  ApiKey: AAAAAAAAAAAAA
+  ApiKey: FROM.ASP.NET
+  TestUrl: https://trackchanges.postlight.com/building-awesome-cms-f034344d8ed
 
 Blacklist:
   - .*phone.*
   - .*twilio.*
+  - .*nytimes\..*

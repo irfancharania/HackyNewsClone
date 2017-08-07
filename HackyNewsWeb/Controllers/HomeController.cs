@@ -10,7 +10,7 @@ namespace HackyNewsWeb.Controllers
 {
 	public class HomeController : Controller
 	{
-		private const string CONFIG_PATH = "config.yml";
+		private const string CONFIG_PATH = "~/config.yml";
 
 		public ActionResult Index()
 		{
@@ -19,9 +19,12 @@ namespace HackyNewsWeb.Controllers
 			var settings = new Data.Settings();
 			settings.Load(configPath);
 			var feed = new Models.Feed(settings);
+			var result = feed.GetItems();
 
-			var maybeItems = feed.GetItems();
-			return View(feed);
+			if (result.Success() == false) {
+				throw new Exception(result.GetError().ToString());
+			}
+			return View(result.GetResult());
 		}
 	}
 }

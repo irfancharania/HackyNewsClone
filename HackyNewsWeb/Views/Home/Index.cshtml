@@ -1,17 +1,23 @@
-﻿@model HackyNewsDomain.Models.Feed
+﻿@model IEnumerable<HackyNewsDomain.Dto.FeedItemWithContentDto>
 <h2>Welcome to ASP.NET MVC !</h2>
 
 
-@{var maybeItems = @Model.GetItems()}
-@if(maybeItems.Success()) {
-    foreach (var result in maybeItems) {
-		if (result.Success()) {
-           <div class="meta">Fetched</div>
-           <h4>@result.GetResult().item.title</h4>
-		   <div class="content">@result.GetResult().content</div>
-		} else {
-            <div class="meta">@result.GetError().errorMessage</div>
-            <h4>@result.GetError().item.title</h4>
-        }
+@foreach (var result in Model.Take(5))
+{
+    if (string.IsNullOrWhiteSpace(result.error))
+    {
+        <article class="fetched">
+            <h4>@result.title</h4>
+            <h5>@result.link</h5>
+            <div class="content">@Html.Raw(@result.content)</div>
+        </article>
+    }
+    else
+    {
+        <article class="original">
+            <h4>@result.title</h4>
+            <h5>@result.link</h5>
+            <div class="error">@result.error</div>
+        </article>
     }
 }
