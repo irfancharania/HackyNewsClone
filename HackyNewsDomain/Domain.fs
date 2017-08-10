@@ -51,36 +51,37 @@ type FeedItemWithContent = {
 type FetchRssFeedItems = UnparsableSites                                        // dependency
                             -> FetchServiceInfo                                 // dependency
                             -> Uri                                              // input
-                            -> Result<seq<FetchedItemResult>, ServiceError>    // output
+                            -> Result<seq<FetchedItemResult>, ServiceError>     // output
 
 
 //------------------------
 
 type GetRssFeed = Uri                                       // input
-                    -> Result<RssFeed, ServiceError>       // output
+                    -> Result<RssFeed, ServiceError>        // output
 
-type IsFetchServiceAvailable<'a> = FetchServiceInfo                         // input
-                                    -> 'a                                   // passthrough
-                                    -> Result<'a, ServiceError>            // output
+type IsFetchServiceAvailable<'a> = FetchServiceInfo                 // input
+                                    -> 'a                           // passthrough
+                                    -> Result<'a, ServiceError>     // output
 
 type TryFetchItems = UnparsableSites                // dependency
                         -> FetchServiceInfo         // dependency
                         -> RssFeed                  // input
                         -> seq<FetchedItemResult>   // output
 
-type TryFetchItemContent = UnparsableSites          // dependency
-                            -> FetchServiceInfo     // dependency                        
-                            -> FeedItem             // input
-                            -> FetchedItemResult    // output
+type TryFetchItemContent = UnparsableSites                  // dependency
+                            -> FetchServiceInfo             // dependency                        
+                            -> FeedItem                     // input
+                            -> Async<FetchedItemResult>     // output
 
 type FetchedItemResult = Result<FeedItemWithContent, FetchItemError>
 
 //------------------------
 // Expected errors
 
+type FetchRssError = string
+type FetchServiceNotAvailableError = {items:seq<FeedItem>; message:string}
 type FetchItemError = {item:FeedItem; message:string}
 
-type ServiceError = 
-| FailedToGetRssCase of string
-| FetchServiceNotAvailableCase of string
-
+type ServiceError =
+| FetchRssErrorCase of FetchRssError
+| FetchServiceNotAvailableErrorCase of FetchServiceNotAvailableError

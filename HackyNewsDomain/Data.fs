@@ -5,6 +5,7 @@ open System.Text.RegularExpressions
 open FSharp.Data
 open FSharp.Configuration
 open HackyNewsDomain.Domain
+open HackyNewsDomain.Utils
 
 
 // Set up Type Providers
@@ -67,26 +68,27 @@ let getRssFeed:GetRssFeed = fun url ->
 
         Ok feed
     with
-        | ex -> Error (FailedToGetRssCase("Unable to load Rss feed: " + ex.Message))
+        | ex -> Error (FetchRssErrorCase ("Unable to load Rss feed: " + ex.Message))
 
         
 let tryFetchItemContent' = fun (service:FetchServiceInfo) (item:FeedItem) ->
-    try
-        let args = List.singleton ("url", item.link.AbsoluteUri);
-        let headers = Seq.singleton ("x-api-key", service.apiKey)
+    async {
+        try
+            let args = List.singleton ("url", item.link.AbsoluteUri);
+            let headers = Seq.singleton ("x-api-key", service.apiKey)
 
-        let responseBody = Http.RequestString(service.apiUrl.AbsoluteUri
-                                              , args, headers)
+            let! responseBody = Http.AsyncRequestString(service.apiUrl.AbsoluteUri
+                                                  , args, headers)
         
-        let data = MercuryResponse.Parse responseBody
+            let data = MercuryResponse.Parse responseBody
 
 
-        if data.WordCount > 0
-            then Ok {item = item; content = data.Content}
-            else Error ({item = item; message = "failed to parse content"})
-    with
-        | ex -> Error ({item = item; message = ex.Message})
-
+            if data.WordCount > 0
+                then return Ok {item = item; content = data.Content}
+                else return Error ({item = item; message = "failed to parse content"})
+        with
+            | ex -> return Error ({item = item; message = ex.Message})
+    }
 
 let tryFetchItemContent:TryFetchItemContent = fun blacklist service item ->
     let isBlackListed (item:FeedItem) = 
@@ -94,7 +96,7 @@ let tryFetchItemContent:TryFetchItemContent = fun blacklist service item ->
         |> Seq.exists (fun x -> x.IsMatch(item.link.AbsoluteUri))
 
     if isBlackListed item then
-        Error ({item = item; message = "Site is blacklisted"})
+        async { return Error ({item = item; message = "Site is blacklisted"}) }
     else
         tryFetchItemContent' service item
 
@@ -102,22 +104,24 @@ let tryFetchItemContent:TryFetchItemContent = fun blacklist service item ->
 let tryFetchItems:TryFetchItems = fun blacklist service feed -> 
     let fetch items = 
         tryFetchItemContent blacklist service items
-        |> Result.mapError logFetchItemError
 
     feed.items
     |> Seq.map fetch
+    |> Async.Parallel
+    |> Async.RunSynchronously
+    |> Array.toSeq
 
 
-let isFetchServiceAvailable:IsFetchServiceAvailable<RssFeed> = fun (service:FetchServiceInfo) item ->
+let isFetchServiceAvailable:IsFetchServiceAvailable<RssFeed> = fun (service:FetchServiceInfo) feed ->
     try
         let args = List.singleton ("url", service.testUrl.AbsoluteUri);
         let headers = Seq.singleton ("x-api-key", service.apiKey)
 
         let responseBody = Http.Request(service.apiUrl.AbsoluteUri
                                                 , args, headers)
-        Ok (item)
+        Ok (feed)
     with
-    | ex -> Error (FetchServiceNotAvailableCase (ex.Message))
+    | ex -> Error (FetchServiceNotAvailableErrorCase {message = ex.Message; items = feed.items})
 
 
 // Run it!
@@ -136,6 +140,5 @@ let getData (settings:Settings) =
         |> Result.bind isFetchServiceAvailable'
         |> Result.map tryFetchItems'
         |> Result.mapError logServiceError
-    
-    fetchRssFeed blacklist fetchService url
 
+    fetchRssFeed blacklist fetchService url

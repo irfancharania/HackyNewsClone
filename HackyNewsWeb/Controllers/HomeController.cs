@@ -16,7 +16,7 @@ namespace HackyNewsWeb.Controllers
 		public ActionResult Index()
 		{
 			// Create new stopwatch.
-			Stopwatch stopwatch = new Stopwatch();
+			//Stopwatch stopwatch = new Stopwatch();
 
 			// Begin timing.
 			//stopwatch.Start();
@@ -25,18 +25,16 @@ namespace HackyNewsWeb.Controllers
 
 			var settings = new Data.Settings();
 			settings.Load(configPath);
-			var feed = new Models.Feed(settings);
-			var result = feed.GetItems();
 
-			if (result.Success() == false) {
-				throw new Exception(result.GetError().ToString());
-			}
+			var feed = new Models.Feed(settings);
+			var model = feed.GetItems(); 
+			
 
 			//var output = result.GetResult().ToList();
 			// Stop timing.
 			//stopwatch.Stop();
 
-			return View(result.GetResult().Take(5));
+			return View(model);
 		}
 	}
 }

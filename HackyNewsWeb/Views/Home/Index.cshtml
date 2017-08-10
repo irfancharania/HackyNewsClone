@@ -1,8 +1,11 @@
-﻿@model IEnumerable<HackyNewsDomain.Dto.FeedItemWithContentDto>
+﻿@model HackyNewsDomain.Dto.ResultDto
 <h2>Welcome to ASP.NET MVC !</h2>
 
+@if (!string.IsNullOrWhiteSpace(Model.error)){
+    <h2>@Model.error</h2>
+}
 
-@foreach (var result in Model)
+@foreach (var result in Model.items)
 {
     if (string.IsNullOrWhiteSpace(result.error))
     {
