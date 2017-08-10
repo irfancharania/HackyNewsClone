@@ -51,17 +51,17 @@ type FeedItemWithContent = {
 type FetchRssFeedItems = UnparsableSites                                        // dependency
                             -> FetchServiceInfo                                 // dependency
                             -> Uri                                              // input
-                            -> Result<seq<FetchedItemResult>, ServiceErrors>    // output
+                            -> Result<seq<FetchedItemResult>, ServiceError>    // output
 
 
 //------------------------
 
 type GetRssFeed = Uri                                       // input
-                    -> Result<RssFeed, ServiceErrors>       // output
+                    -> Result<RssFeed, ServiceError>       // output
 
 type IsFetchServiceAvailable<'a> = FetchServiceInfo                         // input
                                     -> 'a                                   // passthrough
-                                    -> Result<'a, ServiceErrors>            // output
+                                    -> Result<'a, ServiceError>            // output
 
 type TryFetchItems = UnparsableSites                // dependency
                         -> FetchServiceInfo         // dependency
@@ -80,7 +80,7 @@ type FetchedItemResult = Result<FeedItemWithContent, FetchItemError>
 
 type FetchItemError = {item:FeedItem; message:string}
 
-type ServiceErrors = 
+type ServiceError = 
 | FailedToGetRssCase of string
 | FetchServiceNotAvailableCase of string
 

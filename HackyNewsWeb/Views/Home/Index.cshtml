@@ -2,7 +2,7 @@
 <h2>Welcome to ASP.NET MVC !</h2>
 
 
-@foreach (var result in Model.Take(5))
+@foreach (var result in Model)
 {
     if (string.IsNullOrWhiteSpace(result.error))
     {

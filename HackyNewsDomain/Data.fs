@@ -5,8 +5,6 @@ open System.Text.RegularExpressions
 open FSharp.Data
 open FSharp.Configuration
 open HackyNewsDomain.Domain
-open HackyNewsDomain.Dto
-
 
 
 // Set up Type Providers
@@ -34,6 +32,17 @@ let getFetchServiceInfo (settings:Settings) :FetchServiceInfo =
         apiKey = settings.Mercury.ApiKey;
         testUrl = settings.Mercury.TestUrl
     }
+
+
+// Log errors
+// ----------------------
+
+let logFetchItemError x =
+    x
+
+
+let logServiceError x =
+    x
 
 
 // Main functions
@@ -91,8 +100,12 @@ let tryFetchItemContent:TryFetchItemContent = fun blacklist service item ->
 
 
 let tryFetchItems:TryFetchItems = fun blacklist service feed -> 
+    let fetch items = 
+        tryFetchItemContent blacklist service items
+        |> Result.mapError logFetchItemError
+
     feed.items
-    |> Seq.map (tryFetchItemContent blacklist service)
+    |> Seq.map fetch
 
 
 let isFetchServiceAvailable:IsFetchServiceAvailable<RssFeed> = fun (service:FetchServiceInfo) item ->
@@ -122,7 +135,7 @@ let getData (settings:Settings) =
         |> getRssFeed 
         |> Result.bind isFetchServiceAvailable'
         |> Result.map tryFetchItems'
+        |> Result.mapError logServiceError
     
     fetchRssFeed blacklist fetchService url
-    |> Result.map (Seq.map fromDomain)
 

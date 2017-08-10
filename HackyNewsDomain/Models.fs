@@ -1,6 +1,6 @@
 ﻿module HackyNewsDomain.Models
 open HackyNewsDomain.Domain
-
+open HackyNewsDomain.Dto
 
 type ResultOrError<'TResult, 'TErr> (result:Result<'TResult, 'TErr>) =
     member this.Success():bool =
@@ -22,4 +22,5 @@ type ResultOrError<'TResult, 'TErr> (result:Result<'TResult, 'TErr>) =
 type Feed(settings:Data.Settings) =
     member this.GetItems() =
         Data.getData settings
+        |> Result.map (Seq.map fromDomain)
         |> ResultOrError
