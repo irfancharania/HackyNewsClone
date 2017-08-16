@@ -3,6 +3,7 @@
 /// The content is cleansed using the Mercury Postlight web parser
 namespace rec HackyNewsDomain.Domain
 
+
 open System
 open System.Text.RegularExpressions
 open FSharp.Data
