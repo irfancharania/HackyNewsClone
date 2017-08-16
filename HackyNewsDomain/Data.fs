@@ -6,8 +6,9 @@ open FSharp.Data
 open FSharp.Configuration
 open HackyNewsDomain.Domain
 open HackyNewsDomain.Utils
+open HackyNewsDomain.Logging
 
-
+open Microsoft.Extensions.Logging
 // Set up Type Providers
 // ----------------------
 type Settings = YamlConfig<"config.yml">
@@ -68,7 +69,7 @@ let getRssFeed:GetRssFeed = fun url ->
 
         Ok feed
     with
-        | ex -> Error (FetchRssErrorCase ("Unable to load Rss feed: " + ex.Message))
+        | ex -> Result.Error (FetchRssErrorCase ("Unable to load Rss feed: " + ex.Message))
 
         
 let tryFetchItemContent' = fun (service:FetchServiceInfo) (item:FeedItem) ->
@@ -85,9 +86,9 @@ let tryFetchItemContent' = fun (service:FetchServiceInfo) (item:FeedItem) ->
 
             if data.WordCount > 0
                 then return Ok {item = item; content = data.Content}
-                else return Error ({item = item; message = "failed to parse content"})
+                else return Result.Error ({item = item; message = "failed to parse content"})
         with
-            | ex -> return Error ({item = item; message = ex.Message})
+            | ex -> return Result.Error ({item = item; message = ex.Message})
     }
 
 let tryFetchItemContent:TryFetchItemContent = fun blacklist service item ->
@@ -96,7 +97,7 @@ let tryFetchItemContent:TryFetchItemContent = fun blacklist service item ->
         |> Seq.exists (fun x -> x.IsMatch(item.link.AbsoluteUri))
 
     if isBlackListed item then
-        async { return Error ({item = item; message = "Site is blacklisted"}) }
+        async { return Result.Error ({item = item; message = "Site is blacklisted"}) }
     else
         tryFetchItemContent' service item
 
@@ -121,15 +122,16 @@ let isFetchServiceAvailable:IsFetchServiceAvailable<RssFeed> = fun (service:Fetc
                                                 , args, headers)
         Ok (feed)
     with
-    | ex -> Error (FetchServiceNotAvailableErrorCase {message = ex.Message; items = feed.items})
+    | ex -> Result.Error (FetchServiceNotAvailableErrorCase {message = ex.Message; items = feed.items})
 
 
 // Run it!
-let getData (settings:Settings) =
+let getData (settings:Settings) (logger:ILogger)=
     let blacklist = getBlacklist settings
     let fetchService = getFetchServiceInfo settings
     let url = settings.Feed.Url
-    
+
+    logWithArgs logger Info "Commence feed fetching at {StartTime} ({RandomNumber})" [|DateTimeOffset.Now; 42|]
 
     let fetchRssFeed:FetchRssFeedItems = fun blacklist service uri ->
         let isFetchServiceAvailable' = isFetchServiceAvailable service
