@@ -1,4 +1,4 @@
-﻿module HackyNewsDomain.Models
+﻿module HackyNewsDomain.Export
 open HackyNewsDomain.Domain
 open HackyNewsDomain.Dto
 open HackyNewsDomain

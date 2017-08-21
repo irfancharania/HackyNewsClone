@@ -1,0 +1,26 @@
+﻿@model HackyNewsDomain.Dto.ResultDto
+
+@if (!string.IsNullOrWhiteSpace(Model.error))
+{
+    <h2>@Model.error</h2>
+}
+
+@foreach (var result in Model.items)
+{
+    if (!string.IsNullOrWhiteSpace(result.error))
+    {
+        <article class="fetched">
+            <h4>@result.title</h4>
+            <h5>@result.link</h5>
+            <div class="content">@Html.Raw(@result.content)</div>
+        </article>
+    }
+    else
+    {
+        <article class="original">
+            <h4>@result.title</h4>
+            <h5>@result.link</h5>
+            <div class="error">@result.error</div>
+        </article>
+    }
+}
